@@ -34,16 +34,16 @@ public class ChatServer {
 
     public void broadcast(String message) {
 
-        System.out.println(message.startsWith("/w"));
-        if (message.startsWith("/w")) {
-            System.out.println("Это личное сообщение");
-            String[] split = message.split("\\p{Blank}+");
-            for (ClientHandler client : clients) {
-                System.out.println("для "+ split[1]);
-                if (split[1].equals(client.getNick())) {
+        String[] split = message.split("\\p{Blank}+");
+        if (split[1].equals("/w")) {
+           // System.out.println("Это личное сообщение");
 
-                    String[] usefulMessage = new String[split.length - 2];
-                    System.arraycopy(usefulMessage, 0, split, 2, split.length - 1);
+            for (ClientHandler client : clients) {
+               // System.out.println("для "+ split[2]);
+                if (split[2].equals(client.getNick())) {
+
+                    String[] usefulMessage = new String[split.length - 3];
+                    System.arraycopy(usefulMessage, 0, split, 3, split.length - 1);
                     client.sendMessage(usefulMessage.toString());
                     break;
                 }
