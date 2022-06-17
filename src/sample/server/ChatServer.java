@@ -36,15 +36,13 @@ public class ChatServer {
 
         String[] split = message.split("\\p{Blank}+");
         if (split[1].equals("/w")) {
-           // System.out.println("Это личное сообщение");
 
             for (ClientHandler client : clients) {
-               // System.out.println("для "+ split[2]);
-                if (split[2].equals(client.getNick())) {
 
-                    String[] usefulMessage = new String[split.length - 3];
-                    System.arraycopy(usefulMessage, 0, split, 3, split.length - 1);
-                    client.sendMessage(usefulMessage.toString());
+                if (split[2].equals(client.getNick())) {
+                    String usefulMessage = message.replace("/w "+client.getNick(),"");
+
+                    client.sendMessage("Личное сообщение от "+usefulMessage);
                     break;
                 }
             }
