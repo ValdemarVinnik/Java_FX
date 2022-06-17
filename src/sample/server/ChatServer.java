@@ -40,9 +40,9 @@ public class ChatServer {
             for (ClientHandler client : clients) {
 
                 if (split[2].equals(client.getNick())) {
-                    String usefulMessage = message.replace("/w "+client.getNick(),"");
+                    String usefulMessage = message.replace("/w " + client.getNick(), "");
 
-                    client.sendMessage("Личное сообщение от "+usefulMessage);
+                    client.sendMessage("Личное сообщение от " + usefulMessage);
                     break;
                 }
             }

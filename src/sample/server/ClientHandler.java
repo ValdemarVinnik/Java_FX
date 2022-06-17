@@ -52,11 +52,11 @@ public class ClientHandler {
 
                     if (nick != null) {
 
-                        if (server.isNickBusy(nick)){
+                        if (server.isNickBusy(nick)) {
                             sendMessage("Пользователь уже авторизован");
                             continue;
                         }
-                            this.nick = nick;
+                        this.nick = nick;
 
                         sendMessage("/authok " + nick);
                         server.broadcast("Пользователь " + nick + " зашёл в чат");
