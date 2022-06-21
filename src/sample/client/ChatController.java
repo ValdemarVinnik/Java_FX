@@ -15,6 +15,9 @@ import java.util.Optional;
 public class ChatController {
 
     @FXML
+    private TextField timeForAuth;
+
+    @FXML
     private ListView<String> clientList;
     @FXML
     private HBox authBox;
@@ -34,11 +37,7 @@ public class ChatController {
     @FXML
     private TextArea messageArea;
 
-    @FXML
-    private Button button;
-
     private final ChatClient client;
-
     private String selectedNick;
 
     public ChatController() {
@@ -95,6 +94,7 @@ public class ChatController {
     public void setAuth(boolean success) {
         authBox.setVisible(!success);
         messageBox.setVisible(success);
+
     }
 
     public void signinBtnClick() {
@@ -130,6 +130,15 @@ public class ChatController {
 
     public ChatClient getClient() {
         return client;
+    }
+
+    public boolean isAuthSuccess() {
+        return messageBox.isVisible();
+    }
+
+    public void displayCurrentTime(int currentTime) {
+        timeForAuth.clear();
+        timeForAuth.setText(""+currentTime);
     }
 }
 

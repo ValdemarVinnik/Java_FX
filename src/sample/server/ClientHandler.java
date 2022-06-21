@@ -29,8 +29,9 @@ public class ClientHandler {
             new Thread(() -> {
 
                 try {
-                    authenticate();
-                    readMessage();
+                    if (authenticate()) {
+                        readMessage();
+                    }
                 } finally {
                     closeConnection();
                 }
@@ -42,12 +43,16 @@ public class ClientHandler {
 
     }
 
-    private void authenticate() {
+    private boolean authenticate() {
         while (true) {
             try {
                 final String message = in.readUTF();
                 if (Command.isCommand(message)) {
                     Command command = Command.getCommand(message);
+
+                    if (command == Command.END) {
+                        return false;
+                    }
 
                     if (command == Command.AUTH) {
                         String[] params = command.parse(message);
@@ -55,21 +60,24 @@ public class ClientHandler {
                         String password = params[1];
                         String nick = authService.getNickByLoginAndPassword(login, password);
 
+                        if (nick == null){
+                            sendMessage(Command.ERROR, "Неверные логин и пароль...");
+                        }
+
                         if (nick != null) {
 
                             if (server.isNickBusy(nick)) {
                                 sendMessage(Command.ERROR, "Пользователь уже авторизован");
                                 continue;
                             }
+
                             this.nick = nick;
 
                             sendMessage(Command.AUTHOK, nick);
-                            server.broadcast(Command.MESSAGE,"Пользователь " + nick + " зашёл в чат");
+                            server.broadcast(Command.MESSAGE, "Пользователь " + nick + " зашёл в чат");
                             server.subscribe(this);
 
-                            break;
-                        } else {
-                            sendMessage(Command.ERROR, "Неверные логин и пароль...");
+                            return true;
                         }
                     }
 
@@ -77,6 +85,7 @@ public class ClientHandler {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                return false;
             }
         }
     }
@@ -113,7 +122,6 @@ public class ClientHandler {
                 e.printStackTrace();
             }
         }
-
     }
 
     private void sendMessage(String message) {
@@ -133,7 +141,7 @@ public class ClientHandler {
                     break;
                 }
 
-                if (command == Command.PRIVATE_MESSAGE){
+                if (command == Command.PRIVATE_MESSAGE) {
                     String[] params = command.parse(message);
                     server.sendPrivateMessage(this, params[0], params[1]);
                     continue;

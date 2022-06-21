@@ -1,6 +1,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
 <VBox fx:controller="sample.client.ChatController" xmlns:fx="http://javafx.com/fxml"
       alignment="center">
     <padding>
@@ -14,9 +15,18 @@
         </padding>
         <VBox>
             <HBox fx:id="authBox">
-                <TextField fx:id="loginField" promptText="login"/>
-                <PasswordField fx:id="passField" promptText="password"/>
-                <Button text="Sign in" onAction="#signinBtnClick"/>
+                <VBox>
+                    <HBox spacing="10">
+                        <Text text="You have "/>
+                        <TextField fx:id="timeForAuth" maxWidth="40" maxHeight="10" editable="false"/>
+                        <Text text=" sec."/>
+                    </HBox>
+                    <HBox spacing="10">
+                        <TextField fx:id="loginField" promptText="login"/>
+                        <PasswordField fx:id="passField" promptText="password"/>
+                        <Button text="Sign in" onAction="#signinBtnClick"/>
+                    </HBox>
+                </VBox>
             </HBox>
             <HBox fx:id="messageBox" visible="false">
                 <VBox>

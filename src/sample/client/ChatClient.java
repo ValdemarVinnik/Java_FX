@@ -11,7 +11,7 @@ import java.net.Socket;
 import static sample.Command.*;
 
 public class ChatClient {
-
+    private final Integer TIME_TO_AUTH = 15;
     private final ChatController controller;
     private Socket socket;
     private DataInputStream in;
@@ -29,8 +29,9 @@ public class ChatClient {
         new Thread(() -> {
 
             try {
-                waitAuth();
-                readMessages();
+                if (waitAuth()) {
+                    readMessages();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -39,17 +40,35 @@ public class ChatClient {
         }).start();
     }
 
-    private void waitAuth() throws IOException {
+    private boolean waitAuth() throws IOException {
+        new Thread(() -> {
+            int currentTime = TIME_TO_AUTH;
+            try {
+                while (currentTime > 0) {
+                    Thread.sleep(1000);
+                    controller.displayCurrentTime(currentTime);
+                    currentTime--;
+                }
+
+                if (!controller.isAuthSuccess()) {
+                    sendMessage(END);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
         while (true) {
             final String message = in.readUTF();
 
             Command command = Command.getCommand(message);
             String[] params = command.parse(message);
+
             if (command == Command.AUTHOK) {
                 String nick = params[0];
                 controller.setAuth(true);
                 controller.addMessage("Успешная авторизация под ником " + nick);
-                break;
+                return true;
             }
 
             if (command == Command.ERROR) {
@@ -57,6 +76,9 @@ public class ChatClient {
                 continue;
             }
 
+            if (command == END) {
+                return false;
+            }
         }
     }
 
@@ -85,6 +107,7 @@ public class ChatClient {
                 e.printStackTrace();
             }
         }
+        Runtime.getRuntime().exit(0);
     }
 
     private void readMessages() throws IOException {
@@ -116,7 +139,6 @@ public class ChatClient {
     }
 
     private void sendMessage(String message) {
-        System.out.println(message);
 
         try {
             out.writeUTF(message);
