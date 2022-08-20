@@ -41,6 +41,7 @@ public class ChatClient {
     }
 
     private boolean waitAuth() throws IOException {
+
         new Thread(() -> {
             int currentTime = TIME_TO_AUTH;
             try {
@@ -48,6 +49,10 @@ public class ChatClient {
                     Thread.sleep(1000);
                     controller.displayCurrentTime(currentTime);
                     currentTime--;
+
+                    if(!controller.authBoxIsVisible()){
+                        currentTime++;
+                    }
                 }
 
                 if (!controller.isAuthSuccess()) {
@@ -66,7 +71,8 @@ public class ChatClient {
 
             if (command == Command.AUTHOK) {
                 String nick = params[0];
-                controller.setAuth(true);
+                //controller.setAuth(true);
+                controller.setMessage(true);
                 controller.addMessage("Успешная авторизация под ником " + nick);
                 return true;
             }
@@ -117,7 +123,7 @@ public class ChatClient {
             Command command = Command.getCommand(message);
 
             if (END == command) {
-                controller.setAuth(false);
+                controller.setMessage(false);
                 break;
             }
 

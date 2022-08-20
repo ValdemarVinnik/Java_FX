@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class ChatController {
+    @FXML
+    public HBox regBox;
 
     @FXML
     private TextField timeForAuth;
@@ -43,6 +45,8 @@ public class ChatController {
     public ChatController() {
 
         this.client = new ChatClient(this);
+        //setMessage(false);
+       // setAuth(true);
 
         while (true) {
             try {
@@ -91,9 +95,28 @@ public class ChatController {
         messageArea.appendText(message + "\n");
     }
 
-    public void setAuth(boolean success) {
-        authBox.setVisible(!success);
+    public void setMessage(boolean success) {
+        //regBox.setVisible(!success);
+       // authBox.setVisible(!success);
         messageBox.setVisible(success);
+
+    }
+
+    public void setAuth(boolean success){
+       // setReg(false);
+       // setMessage(false);
+        authBox.setVisible(success);
+    }
+
+    public boolean authBoxIsVisible(){
+        return authBox.isVisible();
+    }
+
+    public void setReg(boolean success) {
+       authBox.setVisible(!success);
+        regBox.setVisible(success);
+       // authBox.setVisible(!success);
+       // messageBox.setVisible(success);
 
     }
 
@@ -139,6 +162,13 @@ public class ChatController {
     public void displayCurrentTime(int currentTime) {
         timeForAuth.clear();
         timeForAuth.setText(""+currentTime);
+    }
+
+    public void regBtnClick(ActionEvent actionEvent) {
+        setReg(true);
+    }
+
+    public void regNewUserBtnClick(ActionEvent actionEvent) {
     }
 }
 

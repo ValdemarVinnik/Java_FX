@@ -25,6 +25,17 @@
                         <TextField fx:id="loginField" promptText="login"/>
                         <PasswordField fx:id="passField" promptText="password"/>
                         <Button text="Sign in" onAction="#signinBtnClick"/>
+                        <Button text="Registration" onAction="#regBtnClick"/>
+                    </HBox>
+                </VBox>
+            </HBox>
+            <HBox fx:id="regBox" visible="false">
+                <VBox>
+                    <HBox spacing="10">
+                        <TextField fx:id="newUserNickField" promptText="nick"/>
+                        <TextField fx:id="newUserLoginField" promptText="login"/>
+                        <PasswordField fx:id="newUserPassField" promptText="password"/>
+                        <Button text="Sign in" onAction="#regNewUserBtnClick"/>
                     </HBox>
                 </VBox>
             </HBox>

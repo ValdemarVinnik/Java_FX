@@ -14,6 +14,14 @@ public enum Command {
         }
     },
 
+    REG("/reg"){
+        @Override
+        public String[] parse(String commandText) {
+            String[] split = commandText.split(TOKEN_DELIMITER);
+            return new String[]{split[1],split[2],split[3]};
+        }
+    },
+
     AUTHOK("/authok"){
         @Override
         public String[] parse(String commandText) {
