@@ -81,7 +81,18 @@ public class ClientHandler {
                         }
                     }
 
+                    if (command == Command.REG){
+                        String[] params = command.parse(message);
+                        String nick = params[0];
+                        String login = params[1];
+                        String password = params[2];
 
+                        if(authService.registrationNewUser(nick, login, password)){
+                            sendMessage(Command.REGOK,"Вы_зарегистрировались_под_"+nick);
+                        }else{
+                            sendMessage(Command.ERROR,"nick "+nick+" уже занят.");
+                        }
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();

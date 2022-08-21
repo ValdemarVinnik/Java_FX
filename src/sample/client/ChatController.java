@@ -5,11 +5,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import sample.Command;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 public class ChatController {
@@ -17,10 +15,20 @@ public class ChatController {
     public HBox regBox;
 
     @FXML
+    public TextField newUserNickField;
+
+    @FXML
+    public TextField newUserLoginField;
+
+    @FXML
+    public PasswordField newUserPassField;
+
+    @FXML
     private TextField timeForAuth;
 
     @FXML
     private ListView<String> clientList;
+
     @FXML
     private HBox authBox;
 
@@ -46,7 +54,7 @@ public class ChatController {
 
         this.client = new ChatClient(this);
         //setMessage(false);
-       // setAuth(true);
+        // setAuth(true);
 
         while (true) {
             try {
@@ -80,8 +88,8 @@ public class ChatController {
             return;
         }
 
-        if (selectedNick != null){
-            client.sendMessage(Command.PRIVATE_MESSAGE,selectedNick, message);
+        if (selectedNick != null) {
+            client.sendMessage(Command.PRIVATE_MESSAGE, selectedNick, message);
             selectedNick = null;
         } else {
             client.sendMessage(Command.MESSAGE, message);
@@ -95,34 +103,39 @@ public class ChatController {
         messageArea.appendText(message + "\n");
     }
 
-    public void setMessage(boolean success) {
+    public void setMessageWindow(boolean success) {
         //regBox.setVisible(!success);
-       // authBox.setVisible(!success);
+        // authBox.setVisible(!success);
         messageBox.setVisible(success);
 
     }
 
-    public void setAuth(boolean success){
-       // setReg(false);
-       // setMessage(false);
+    public void setAuthWindow(boolean success) {
+        // setReg(false);
+        // setMessage(false);
         authBox.setVisible(success);
     }
 
-    public boolean authBoxIsVisible(){
+    public boolean authBoxIsVisible() {
         return authBox.isVisible();
     }
 
-    public void setReg(boolean success) {
-       authBox.setVisible(!success);
+    public void setRegWindow(boolean success) {
+        authBox.setVisible(!success);
         regBox.setVisible(success);
-       // authBox.setVisible(!success);
-       // messageBox.setVisible(success);
+        // authBox.setVisible(!success);
+        // messageBox.setVisible(success);
 
     }
 
     public void signinBtnClick() {
 
         client.sendMessage(Command.AUTH, loginField.getText(), passField.getText());
+    }
+
+    public void regNewUserBtnClick(ActionEvent actionEvent) {
+        client.sendMessage(Command.REG, newUserNickField.getText(),
+                            newUserLoginField.getText(), newUserPassField.getText());
     }
 
     public void showError(String errorMessage) {
@@ -132,10 +145,18 @@ public class ChatController {
         alert.showAndWait();
     }
 
+    public void showInformation(String informationMessage) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, informationMessage,
+                new ButtonType("OK", ButtonBar.ButtonData.OK_DONE));
+        alert.setTitle("Information");
+        alert.showAndWait();
+    }
+
+
     public void selectClients(MouseEvent mouseEvent) {
         if (mouseEvent.getClickCount() == 2) {
             String selectedNick = clientList.getSelectionModel().getSelectedItem();
-            if (selectedNick != null && !selectedNick.isEmpty()){
+            if (selectedNick != null && !selectedNick.isEmpty()) {
                 this.selectedNick = selectedNick;
             }
         }
@@ -161,14 +182,13 @@ public class ChatController {
 
     public void displayCurrentTime(int currentTime) {
         timeForAuth.clear();
-        timeForAuth.setText(""+currentTime);
+        timeForAuth.setText("" + currentTime);
     }
 
     public void regBtnClick(ActionEvent actionEvent) {
-        setReg(true);
+        setRegWindow(true);
     }
 
-    public void regNewUserBtnClick(ActionEvent actionEvent) {
-    }
+
 }
 

@@ -11,7 +11,7 @@ import java.net.Socket;
 import static sample.Command.*;
 
 public class ChatClient {
-    private final Integer TIME_TO_AUTH = 15;
+    private final Integer TIME_TO_AUTH = 25;
     private final ChatController controller;
     private Socket socket;
     private DataInputStream in;
@@ -71,10 +71,17 @@ public class ChatClient {
 
             if (command == Command.AUTHOK) {
                 String nick = params[0];
-                //controller.setAuth(true);
-                controller.setMessage(true);
+                controller.setAuthWindow(false);
+                controller.setMessageWindow(true);
                 controller.addMessage("Успешная авторизация под ником " + nick);
                 return true;
+            }
+
+            if (command == REGOK) {
+                Platform.runLater(() -> controller.showInformation(params[0]));
+                controller.setRegWindow(false);
+                controller.setAuthWindow(true);
+                continue;
             }
 
             if (command == Command.ERROR) {
@@ -123,7 +130,7 @@ public class ChatClient {
             Command command = Command.getCommand(message);
 
             if (END == command) {
-                controller.setMessage(false);
+                controller.setMessageWindow(false);
                 break;
             }
 

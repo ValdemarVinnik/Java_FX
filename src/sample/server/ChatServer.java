@@ -55,7 +55,7 @@ public class ChatServer {
     }
 
     public boolean isNickBusy(String nick) {
-       return clients.get(nick) != null;
+        return clients.get(nick) != null;
 
     }
 
@@ -71,7 +71,7 @@ public class ChatServer {
             return;
         }
 
-        clientTo.sendMessage(Command.MESSAGE, "От " + from.getNick() +": "+ message);
-        from.sendMessage(Command.MESSAGE, "Учаснику "+ nickTo + ": "+ message);
+        clientTo.sendMessage(Command.MESSAGE, "От " + from.getNick() + ": " + message);
+        from.sendMessage(Command.MESSAGE, "Учаснику " + nickTo + ": " + message);
     }
 }

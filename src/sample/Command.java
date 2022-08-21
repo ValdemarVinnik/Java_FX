@@ -30,6 +30,14 @@ public enum Command {
         }
     },
 
+    REGOK("/regok"){
+        @Override
+        public String[] parse(String commandText) {
+            String[] split = commandText.split(TOKEN_DELIMITER);
+            return new String[]{split[1]};
+        }
+    },
+
     END("/end"){
         @Override
         public String[] parse(String commandText) {

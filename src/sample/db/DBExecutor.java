@@ -42,13 +42,9 @@ public class DBExecutor {
     }
 
     public User getUserByLoginAndPassword(String login, String password) {
-        String request = Request.SelectByLoginAndPassword(login, password);
+        String request = Request.selectByLoginAndPassword(login, password);
         try {
-            System.out.println("DBExecutor.getUserByLoginAndPassword..."+login+" "+password);
             ResultSet resultSet = getStatement().executeQuery(request);
-
-
-            System.out.println(resultSet.getString("nick"));
             return new User(resultSet.getString("nick"),
                     resultSet.getString("login"),
                     resultSet.getString("password"));
@@ -60,6 +56,32 @@ public class DBExecutor {
         return null;
     }
 
+    public boolean registrationNewUser(String nick, String login, String password) {
+        String selectRequest = Request.selectByNick(nick);
+
+        try {
+            ResultSet resultSet = getStatement().executeQuery(selectRequest);
+
+            if (resultSet != null) {
+                return insertNewUser(nick, login, password);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private boolean insertNewUser(String nick, String login, String password) {
+        String insertRequest = Request.insertNewUser(nick, login, password);
+
+        try {
+            int addedUser = getStatement().executeUpdate(insertRequest);
+            return (addedUser == 1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
 
 
