@@ -141,6 +141,10 @@ public class ChatClient {
                 continue;
             }
 
+            if (HISTORY == command) {
+                Platform.runLater(() -> controller.addMessage(command.parse(message)[0]));
+            }
+
             if (Command.MESSAGE == command) {
                 Platform.runLater(() -> controller.addMessage(command.parse(message)[0]));
             }

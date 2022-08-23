@@ -1,11 +1,13 @@
 package sample.server;
 
+import org.w3c.dom.ls.LSOutput;
 import sample.Command;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import javax.print.DocFlavor;
+import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class ClientHandler {
 
@@ -15,6 +17,9 @@ public class ClientHandler {
     private DataOutputStream out;
     private String nick;
     private AuthService authService;
+
+    private String pathToFile = String.format("src/sample/server/usersHistory/%s", getNick());
+    private Path file;
 
     public ClientHandler(Socket socket, ChatServer server, AuthService authService) {
 
@@ -60,7 +65,7 @@ public class ClientHandler {
                         String password = params[1];
                         String nick = authService.getNickByLoginAndPassword(login, password);
 
-                        if (nick == null){
+                        if (nick == null) {
                             sendMessage(Command.ERROR, "Неверные логин и пароль...");
                         }
 
@@ -74,6 +79,8 @@ public class ClientHandler {
                             this.nick = nick;
 
                             sendMessage(Command.AUTHOK, nick);
+                            sendMessage(Command.HISTORY, readFromFile());
+
                             server.broadcast(Command.MESSAGE, "Пользователь " + nick + " зашёл в чат");
                             server.subscribe(this);
 
@@ -81,16 +88,16 @@ public class ClientHandler {
                         }
                     }
 
-                    if (command == Command.REG){
+                    if (command == Command.REG) {
                         String[] params = command.parse(message);
                         String nick = params[0];
                         String login = params[1];
                         String password = params[2];
 
-                        if(authService.registrationNewUser(nick, login, password)){
-                            sendMessage(Command.REGOK,"Вы_зарегистрировались_под_"+nick);
-                        }else{
-                            sendMessage(Command.ERROR,"nick "+nick+" уже занят.");
+                        if (authService.registrationNewUser(nick, login, password)) {
+                            sendMessage(Command.REGOK, "Вы_зарегистрировались_под_" + nick);
+                        } else {
+                            sendMessage(Command.ERROR, "nick " + nick + " уже занят.");
                         }
                     }
                 }
@@ -103,6 +110,39 @@ public class ClientHandler {
 
     public void sendMessage(Command command, String... params) {
         sendMessage(command.collectMessage(params));
+    }
+
+
+    private void saveToFile(String data) {
+
+        file = Path.of(pathToFile);
+        try (FileWriter writer = new FileWriter(String.valueOf(file))) {
+            writer.write(data);
+        } catch (IOException e) {
+
+        }
+    }
+
+    private String readFromFile() throws IOException {
+
+        pathToFile = String.format("src/sample/server/usersHistory/%s.txt", getNick());
+        file = Path.of(pathToFile);
+
+        if (Files.exists(file)) {
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(file)))) {
+                StringBuilder messageFromFile = new StringBuilder();
+
+                while (reader.ready()) {
+                    messageFromFile.append(reader.readLine() + "\n");
+                }
+
+                return messageFromFile.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return "";
     }
 
     private void closeConnection() {
@@ -155,6 +195,13 @@ public class ClientHandler {
                 if (command == Command.PRIVATE_MESSAGE) {
                     String[] params = command.parse(message);
                     server.sendPrivateMessage(this, params[0], params[1]);
+                    continue;
+                }
+
+                if (command == Command.FOR_SAVE) {
+                    String[] params = command.parse(message);
+                    saveToFile(params[0]);
+
                     continue;
                 }
 

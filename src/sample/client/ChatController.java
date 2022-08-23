@@ -7,8 +7,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import sample.Command;
 
+import javax.print.DocFlavor;
 import java.io.IOException;
 import java.util.Optional;
+
+import static sample.Command.FOR_SAVE;
 
 public class ChatController {
     @FXML
@@ -104,15 +107,11 @@ public class ChatController {
     }
 
     public void setMessageWindow(boolean success) {
-        //regBox.setVisible(!success);
-        // authBox.setVisible(!success);
         messageBox.setVisible(success);
 
     }
 
     public void setAuthWindow(boolean success) {
-        // setReg(false);
-        // setMessage(false);
         authBox.setVisible(success);
     }
 
@@ -123,13 +122,9 @@ public class ChatController {
     public void setRegWindow(boolean success) {
         authBox.setVisible(!success);
         regBox.setVisible(success);
-        // authBox.setVisible(!success);
-        // messageBox.setVisible(success);
-
     }
 
     public void signinBtnClick() {
-
         client.sendMessage(Command.AUTH, loginField.getText(), passField.getText());
     }
 
@@ -163,12 +158,35 @@ public class ChatController {
 
     }
 
+    public String glueText(String[] array, int startIndex){
+        StringBuilder builder = new StringBuilder();
+        for (int i = startIndex; i < array.length; i++){
+            builder.append(array[i]+"\n");
+        }
+        return builder.toString();
+    }
+
+    public String getTextFromDisplay(){
+
+        String[] array= messageArea.getText().split("\n");
+        if(array.length < 100){
+           return glueText(array,1);
+        }else{
+            return glueText(array, array.length - 100);
+        }
+    }
+
     public void updateClientList(String[] clients) {
         clientList.getItems().clear();
         clientList.getItems().addAll(clients);
     }
 
+    private void sendHistory(){
+        client. sendMessage(FOR_SAVE,getTextFromDisplay());
+    }
+
     public void signOutClick(ActionEvent actionEvent) {
+        sendHistory();
         client.sendMessage(Command.END);
     }
 

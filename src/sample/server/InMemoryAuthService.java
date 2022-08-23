@@ -13,7 +13,6 @@ public class InMemoryAuthService implements AuthService {
     public String getNickByLoginAndPassword(String login, String password) {
         User user = new DBExecutor().getUserByLoginAndPassword(login, password);
 
-        System.out.println("InMemoryAutService.getNick..." + user.getNick());
         return user.getNick();
     }
 

@@ -1,5 +1,6 @@
 package sample;
 
+import javax.print.DocFlavor;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
@@ -31,9 +32,27 @@ public enum Command {
     },
 
     REGOK("/regok"){
-        @Override
+         @Override
         public String[] parse(String commandText) {
             String[] split = commandText.split(TOKEN_DELIMITER);
+            return new String[]{split[1]};
+        }
+    },
+
+    FOR_SAVE("/for_save"){
+        @Override
+        public String[] parse(String commandText) {
+            String[] split = commandText.split(TOKEN_DELIMITER, 2);
+
+            return new String[]{split[1]};
+        }
+    },
+
+    HISTORY("/history"){
+        @Override
+        public String[] parse(String commandText) {
+            String[] split = commandText.split(TOKEN_DELIMITER, 2);
+
             return new String[]{split[1]};
         }
     },
