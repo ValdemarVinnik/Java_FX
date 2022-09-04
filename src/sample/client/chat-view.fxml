@@ -1,0 +1,60 @@
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<VBox fx:controller="sample.client.ChatController" xmlns:fx="http://javafx.com/fxml"
+      alignment="center">
+    <padding>
+        <Insets bottom="10" left="10" right="10" top="10"/>
+    </padding>
+
+
+    <HBox spacing="20">
+        <padding>
+            <Insets bottom="10" left="10" right="10" top="10"/>
+        </padding>
+        <VBox>
+            <HBox fx:id="authBox">
+                <VBox>
+                    <HBox spacing="10">
+                        <Text text="You have "/>
+                        <TextField fx:id="timeForAuth" maxWidth="40" maxHeight="10" editable="false"/>
+                        <Text text=" sec."/>
+                    </HBox>
+                    <HBox spacing="10">
+                        <TextField fx:id="loginField" promptText="login"/>
+                        <PasswordField fx:id="passField" promptText="password"/>
+                        <Button text="Sign in" onAction="#signinBtnClick"/>
+                        <Button text="Registration" onAction="#regBtnClick"/>
+                    </HBox>
+                </VBox>
+            </HBox>
+            <HBox fx:id="regBox" visible="false">
+                <VBox>
+                    <HBox spacing="10">
+                        <TextField fx:id="newUserNickField" promptText="nick"/>
+                        <TextField fx:id="newUserLoginField" promptText="login"/>
+                        <PasswordField fx:id="newUserPassField" promptText="password"/>
+                        <Button text="Sign in" onAction="#regNewUserBtnClick"/>
+                    </HBox>
+                </VBox>
+            </HBox>
+            <HBox fx:id="messageBox" visible="false">
+                <VBox>
+                    <TextArea fx:id="messageArea" VBox.vgrow="ALWAYS" editable="false"/>
+                    <HBox spacing="10">
+                        <TextField fx:id="messageField" HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="button" text="Send" defaultButton="true" onAction="#clickSendButton"/>
+                    </HBox>
+                </VBox>
+                <VBox>
+                    <Button text="Sign out" onAction="#signOutClick"/>
+                    <ListView fx:id="clientList" minWidth="200" onMouseClicked="#selectClients"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </HBox>
+</VBox>
+
+
+
