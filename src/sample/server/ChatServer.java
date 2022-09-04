@@ -1,5 +1,7 @@
 package sample.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sample.Command;
 
 import java.io.IOException;
@@ -12,6 +14,7 @@ import java.util.stream.Collectors;
 public class ChatServer {
 
     private final Map<String, ClientHandler> clients;
+    private static Logger log = LoggerFactory.getLogger("file");
 
     public ChatServer() {
         this.clients = new HashMap<>();
@@ -23,10 +26,15 @@ public class ChatServer {
         try (ServerSocket serverSocket = new ServerSocket(8888);
              AuthService authService = new InMemoryAuthService()) {
 
+            log.info(String.format("Сервер запустился"));
+
             while (true) {
-                System.out.println("Ожидаю подключения");
+
+                log.info(String.format("Ожидается подключение клиента"));
+
                 final Socket socket = serverSocket.accept();
-                System.out.println("Клиент подключён");
+
+                log.info(String.format("Клиент подключён"));
 
                 new ClientHandler(socket, this, authService);
             }
@@ -68,10 +76,12 @@ public class ChatServer {
         ClientHandler clientTo = clients.get(nickTo);
         if (clientTo == null) {
             from.sendMessage(Command.ERROR, "пользователь не авторизован...");
+            log.error(String.format("Попытка послать сообщение не авторизованному пользователю %s",nickTo));
             return;
         }
 
         clientTo.sendMessage(Command.MESSAGE, "От " + from.getNick() + ": " + message);
         from.sendMessage(Command.MESSAGE, "Учаснику " + nickTo + ": " + message);
+        log.info(String.format("Пользователь %s послал личное сообщение %s",from.getNick(),nickTo));
     }
 }

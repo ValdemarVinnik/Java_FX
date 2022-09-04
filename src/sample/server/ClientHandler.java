@@ -1,5 +1,7 @@
 package sample.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.ls.LSOutput;
 import sample.Command;
 
@@ -20,6 +22,8 @@ public class ClientHandler {
 
     private String pathToFile = String.format("src/sample/server/usersHistory/%s", getNick());
     private Path file;
+
+    private static Logger log = LoggerFactory.getLogger("file");
 
     public ClientHandler(Socket socket, ChatServer server, AuthService authService) {
 
@@ -56,6 +60,11 @@ public class ClientHandler {
                     Command command = Command.getCommand(message);
 
                     if (command == Command.END) {
+                        if (nick != null) {
+                            log.info(String.format("Соединение с %s прервано...", getNick()));
+                        } else {
+                            log.info(String.format("Соединение с клиентом прервано..."));
+                        }
                         return false;
                     }
 
@@ -67,12 +76,14 @@ public class ClientHandler {
 
                         if (nick == null) {
                             sendMessage(Command.ERROR, "Неверные логин и пароль...");
+                            log.error(String.format("Попытка ввода неверных логина %s или пороля %s..", login, password));
                         }
 
                         if (nick != null) {
 
                             if (server.isNickBusy(nick)) {
                                 sendMessage(Command.ERROR, "Пользователь уже авторизован");
+                                log.error(String.format("попытка зайти под занятым nick-ом %s...", nick));
                                 continue;
                             }
 
@@ -81,8 +92,10 @@ public class ClientHandler {
                             sendMessage(Command.AUTHOK, nick);
                             sendMessage(Command.HISTORY, readFromFile());
 
-                            server.broadcast(Command.MESSAGE, "Пользователь " + nick + " зашёл в чат");
+                            server.broadcast(Command.MESSAGE, "Пользователь " + nick + " зашёл в чат...");
                             server.subscribe(this);
+
+                            log.info(String.format("Пользователь %s зашёл в чат...", nick));
 
                             return true;
                         }
@@ -96,13 +109,16 @@ public class ClientHandler {
 
                         if (authService.registrationNewUser(nick, login, password)) {
                             sendMessage(Command.REGOK, "Вы_зарегистрировались_под_" + nick);
+                            log.info(String.format("nick %s зарегистрировался", nick));
                         } else {
                             sendMessage(Command.ERROR, "nick " + nick + " уже занят.");
+
                         }
                     }
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.toString());
+
                 return false;
             }
         }
@@ -119,11 +135,11 @@ public class ClientHandler {
         try (FileWriter writer = new FileWriter(String.valueOf(file))) {
             writer.write(data);
         } catch (IOException e) {
-
+            log.error(e.getMessage());
         }
     }
 
-    private String readFromFile() throws IOException {
+    private String readFromFile() {
 
         pathToFile = String.format("src/sample/server/usersHistory/%s.txt", getNick());
         file = Path.of(pathToFile);
@@ -139,7 +155,7 @@ public class ClientHandler {
 
                 return messageFromFile.toString();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
         return "";
@@ -153,7 +169,7 @@ public class ClientHandler {
             try {
                 in.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
 
@@ -161,7 +177,7 @@ public class ClientHandler {
             try {
                 out.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
 
@@ -170,8 +186,14 @@ public class ClientHandler {
             try {
                 socket.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
+        }
+
+        if (nick != null) {
+            log.info(String.format("Соединение с %s прервано...", nick));
+        } else {
+            log.info(String.format("Соединение с клиентом прервано..."));
         }
     }
 
@@ -179,7 +201,7 @@ public class ClientHandler {
         try {
             out.writeUTF(message);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 
@@ -208,7 +230,7 @@ public class ClientHandler {
                 server.broadcast(Command.MESSAGE, nick + ": " + command.parse(message)[0]);
 
             } catch (IOException e) {
-                e.printStackTrace();
+               log.error(e.getMessage());
             }
         }
     }
